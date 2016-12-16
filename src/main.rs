@@ -1,11 +1,10 @@
 extern crate clap;
 extern crate futures;
-extern crate log;
 extern crate tokio_core;
 extern crate trust_dns;
 
 use std::error::Error;
-use std::net::*;
+use std::net::{SocketAddr, ToSocketAddrs};
 use std::process::exit;
 
 use clap::{Arg, App};
@@ -13,7 +12,7 @@ use clap::{Arg, App};
 use tokio_core::reactor::Core;
 
 use trust_dns::client::{ClientFuture, ClientHandle};
-use trust_dns::error::*;
+use trust_dns::error::ClientResult;
 use trust_dns::op::{Message, ResponseCode};
 use trust_dns::rr::domain;
 use trust_dns::rr::{DNSClass, RecordType, RecordSet};
