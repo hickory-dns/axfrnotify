@@ -29,3 +29,7 @@ Sending notify for domain 'example.com' to secondary '8.8.8.8:53'.
 Successfully sent notification and received positive response.
 ```
 
+---
+
+We stand on the shoulders of giants. Thanks to [bluejekyll](https://github.com/bluejekyll) for [TRust-DNS](http://trust-dns.org) which is the foundation for this this little helper.
+
