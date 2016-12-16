@@ -1,0 +1,29 @@
+[package]
+name = "axfr_notify"
+version = "0.0.1"
+authors = ["Lukas Pustina <lukas@pustina.net>"]
+description = "Sends an NS_NOTIFY query to a secondary DNS server to refresh a zone via AXFR."
+repository = "https://github.com/lukaspustina/axfr_notify.git"
+documentation = "http://lukaspustina.github.io/axfr_notify"
+readme = "README.md"
+license = "MIT"
+keywords = ["dns", "axfr", "notify"]
+include = [
+  "README.md",
+  "LICENSE",
+  "**/*.rs",
+  "Cargo.toml",
+]
+
+[[bin]]
+name = "axfrnotify"
+path = "src/main.rs"
+
+[dependencies]
+clap = "2"
+env_logger = "0.3"
+futures = "^0.1"
+log = "0.3"
+tokio-core = "^0.1"
+trust-dns = { git = "https://github.com/bluejekyll/trust-dns.git" }
+
