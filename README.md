@@ -29,6 +29,13 @@ Sending notify for domain 'example.com' to secondary '8.8.8.8:53'.
 Successfully sent notification and received positive response.
 ```
 
+## TODOs
+
+* Allow for notification for different record types -- cf. https://github.com/bluejekyll/trust-dns/blob/master/client/src/rr/record_type.rs#L83.
+* Use `From<ClientError>` for exit codes.
+* Move repo to trust-dns org.
+* Add Travis CI packing for Debian.
+
 ---
 
 We stand on the shoulders of giants. Thanks to [bluejekyll](https://github.com/bluejekyll) for [TRust-DNS](http://trust-dns.org) which is the foundation for this this little helper.
