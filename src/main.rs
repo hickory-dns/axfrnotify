@@ -23,6 +23,7 @@ static VERSION: &'static str = env!("CARGO_PKG_VERSION");
 struct Config {
     secondary: String,
     port: u16,
+    record_type: RecordType,
     domain_name: String,
     verbose: bool,
 }
@@ -50,8 +51,8 @@ impl From<ExitCodes> for i32 {
 fn main() {
     let result = match parse_parameters() {
         Ok(config) => {
-            if config.verbose { println!("Sending notify for domain '{}' to secondary '{}:{}'.", config.domain_name, config.secondary, config.port) }
-            let result = notify((&config.secondary[..], config.port), &config.domain_name);
+            if config.verbose { println!("Sending notify of type '{:?}' for domain '{}' to secondary '{}:{}'.", config.record_type, config.domain_name, config.secondary, config.port) }
+            let result = notify((&config.secondary[..], config.port), &config.record_type, &config.domain_name);
             if config.verbose { print_failure_message(&result) };
             result
         },
@@ -80,6 +81,12 @@ fn parse_parameters() -> Result<Config, ExitCodes> {
             .long("port")
             .value_name("port")
             .help("Set the secondary's port; defaults to 53"))
+        .arg(Arg::with_name("record_type")
+            .takes_value(true)
+            .short("t")
+            .long("type")
+            .value_name("record_type")
+            .help("Set the record type to send (A, AAAA, CHAME, MX, NS, PTR, SOA, SRV, TXT, ANY, AXFR); defaults to SOA"))
         .arg(Arg::with_name("domain")
             .takes_value(true)
             .required(true)
@@ -99,9 +106,15 @@ fn parse_parameters() -> Result<Config, ExitCodes> {
         let msg = format!("'{}' is not a valid port number.", cli_args.value_of("port").unwrap());
         return Err(ExitCodes::InputError(msg));
     };
+    let record_type = if let Ok(record_type) = RecordType::from_str(cli_args.value_of("record_type").unwrap_or("SOA")) {
+        record_type
+    } else {
+        let msg = format!("'{}' is not a valid record type.", cli_args.value_of("record_type").unwrap());
+        return Err(ExitCodes::InputError(msg));
+    };
     let domain_name = cli_args.value_of("domain").unwrap();
 
-    Ok(Config { secondary: secondary.to_string(), port: port, domain_name: domain_name.to_string(), verbose: verbose })
+    Ok(Config { secondary: secondary.to_string(), port: port, record_type: record_type, domain_name: domain_name.to_string(), verbose: verbose })
 }
 
 fn print_failure_message(result: &ExitCodes) -> () {
@@ -124,7 +137,7 @@ fn print_failure_message(result: &ExitCodes) -> () {
     }
 }
 
-fn notify<A: ToSocketAddrs>(addr: A, domain_name: &str) -> ExitCodes {
+fn notify<A: ToSocketAddrs>(addr: A, record_type: &RecordType, domain_name: &str) -> ExitCodes {
     let io_loop = if let Ok(io_loop) = Core::new() {
         io_loop
     } else {
@@ -133,7 +146,7 @@ fn notify<A: ToSocketAddrs>(addr: A, domain_name: &str) -> ExitCodes {
 
     let addr: SocketAddr = addr.to_socket_addrs().unwrap().next().unwrap();
     let name = domain::Name::with_labels(domain_name.split('.').map(|x| x.to_string()).collect());
-    let message = send_notify(io_loop, addr, name);
+    let message = send_notify(io_loop, addr, record_type, name);
 
     match message {
         Ok(ref msg) if msg.get_response_code() == ResponseCode::NoError => ExitCodes::NotifySucceeded,
@@ -142,10 +155,10 @@ fn notify<A: ToSocketAddrs>(addr: A, domain_name: &str) -> ExitCodes {
     }
 }
 
-fn send_notify(mut io_loop: Core, addr: SocketAddr, name: domain::Name) -> ClientResult<Message> {
+fn send_notify(mut io_loop: Core, addr: SocketAddr, record_type: &RecordType, name: domain::Name) -> ClientResult<Message> {
     let (stream, sender) = UdpClientStream::new(addr, io_loop.handle());
     let mut client = ClientFuture::new(stream, sender, io_loop.handle(), None);
 
-    io_loop.run(client.notify(name.clone(), DNSClass::IN, RecordType::SOA, None::<RecordSet>))
+    io_loop.run(client.notify(name.clone(), DNSClass::IN, *record_type, None::<RecordSet>))
 }
 
