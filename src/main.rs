@@ -146,6 +146,6 @@ fn send_notify(mut io_loop: Core, addr: SocketAddr, name: domain::Name) -> Clien
     let (stream, sender) = UdpClientStream::new(addr, io_loop.handle());
     let mut client = ClientFuture::new(stream, sender, io_loop.handle(), None);
 
-    io_loop.run(client.notify(name.clone(), DNSClass::IN, RecordType::A, None::<RecordSet>))
+    io_loop.run(client.notify(name.clone(), DNSClass::IN, RecordType::SOA, None::<RecordSet>))
 }
 
