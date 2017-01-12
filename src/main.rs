@@ -21,6 +21,7 @@ use trust_dns::udp::UdpClientStream;
 static VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 struct Config {
+    retries: u16,
     secondary: String,
     port: u16,
     record_type: RecordType,
@@ -28,7 +29,10 @@ struct Config {
     verbose: bool,
 }
 
+
+#[derive(PartialEq)]
 enum ExitCodes {
+    Unknown,
     InputError(String),
     NotifySucceeded,
     NotifyFailed,
@@ -39,6 +43,7 @@ enum ExitCodes {
 impl From<ExitCodes> for i32 {
     fn from(code: ExitCodes) -> Self {
         match code {
+            ExitCodes::Unknown => -2,
             ExitCodes::InputError(_) => -1,
             ExitCodes::NotifySucceeded => 0,
             ExitCodes::NotifyFailed => 1,
@@ -51,9 +56,14 @@ impl From<ExitCodes> for i32 {
 fn main() {
     let result = match parse_parameters() {
         Ok(config) => {
-            if config.verbose { println!("Sending notify of type '{:?}' for domain '{}' to secondary '{}:{}'.", config.record_type, config.domain_name, config.secondary, config.port) }
-            let result = notify((&config.secondary[..], config.port), &config.record_type, &config.domain_name);
-            if config.verbose { print_failure_message(&result) };
+            if config.verbose { println!("Trying to send notify of type '{:?}' for domain '{}' to secondary '{}:{}' for at most {} times.", config.record_type, config.domain_name, config.secondary, config.port, config.retries+1) }
+
+            let mut result = ExitCodes::Unknown;
+            for _ in 0..config.retries+1 {
+                result = notify((&config.secondary[..], config.port), &config.record_type, &config.domain_name);
+                if config.verbose { print_failure_message(&result) };
+                if result == ExitCodes::NotifySucceeded { break };
+            }
             result
         },
         Err(result) => {
@@ -69,6 +79,12 @@ fn parse_parameters() -> Result<Config, ExitCodes> {
     let app = App::new("axfrnotify")
         .version(VERSION)
         .about("Send an NOTIFY message to a secondary name server to initiate a zone refresh for a specific domain name.")
+        .arg(Arg::with_name("retries")
+            .takes_value(true)
+            .short("r")
+            .long("retries")
+            .value_name("retries")
+            .help("Set the number of retries if notification fails; defaults to 0"))
         .arg(Arg::with_name("secondary")
             .takes_value(true)
             .short("s")
@@ -100,6 +116,12 @@ fn parse_parameters() -> Result<Config, ExitCodes> {
 
     let verbose = cli_args.is_present("verbose");
     let secondary = cli_args.value_of("secondary").unwrap_or("127.0.0.1");
+    let retries = if let Ok(retries) = cli_args.value_of("retries").unwrap_or("0").parse::<u16>() {
+        retries
+    } else {
+        let msg = format!("'{}' is not a valid number of retries.", cli_args.value_of("retries").unwrap());
+        return Err(ExitCodes::InputError(msg));
+    };
     let port = if let Ok(port) = cli_args.value_of("port").unwrap_or("53").parse::<u16>() {
         port
     } else {
@@ -114,11 +136,14 @@ fn parse_parameters() -> Result<Config, ExitCodes> {
     };
     let domain_name = cli_args.value_of("domain").unwrap();
 
-    Ok(Config { secondary: secondary.to_string(), port: port, record_type: record_type, domain_name: domain_name.to_string(), verbose: verbose })
+    Ok(Config { retries: retries, secondary: secondary.to_string(), port: port, record_type: record_type, domain_name: domain_name.to_string(), verbose: verbose })
 }
 
 fn print_failure_message(result: &ExitCodes) -> () {
     match *result {
+        ExitCodes::Unknown => {
+            println!("You broke axfrnotify.");
+        },
         ExitCodes::InputError(ref msg) => {
             println!("Failed to parse input because {}", msg);
         },

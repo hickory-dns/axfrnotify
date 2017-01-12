@@ -15,6 +15,8 @@ FLAGS:
 
 OPTIONS:
     -p, --port <port>                    Set the secondary's port; defaults to 53
+    -t, --type <record_type>             Set the record type to send (A, AAAA, CHAME, MX, NS, PTR, SOA, SRV, TXT, ANY, AXFR); defaults to SOA
+    -r, --retries <retries>              Set the number of retries if notification fails; defaults to 0
     -s, --secondary <IP or host name>    Set the secondary name server to notify; defaults to 127.0.0.1
 
 ARGS:
