@@ -33,8 +33,8 @@ Successfully sent notification and received positive response.
 
 ## TODOs
 
-* Use `From<ClientError>` for exit codes.
 * Move repo to trust-dns org.
+* Use `From<ClientError>` for exit codes.
 
 ---
 
