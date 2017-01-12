@@ -1,6 +1,12 @@
 # axfrnotify
 
-Sends an NOTIFY message to a secondary name server to initiate a zone refresh for a specific domain name.
+Sends a NOTIFY message to a secondary name server to initiate a zone refresh for a specific domain name.
+
+axfrnotify sends a special DNS request called a NOTIFY to inform a secondary DNS server to update its zone information for a specific domain. The mechanism is described in [RFC 1996](https://www.ietf.org/rfc/rfc1996.txt). Once a secondary DNS server receives this request it shall initiate a zone transfer from the primary DNS server responsible for the particular zone; see [RFC 5936](https://tools.ietf.org/html/rfc5936)
+
+RFC 1996 only specifies notification for the SOA resource record type, but axfrnotify allows you to send notification for other resource record types as well.
+
+Since UDP is used and packet loss may occur, axfrnotify has an optional retry mechanism that resends the request in case of no or a unsuccessful responses. I've seen server to deliberately drop the first notification and only successfully answer a second, consecutive request.
 
 ## Usage
 

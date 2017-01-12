@@ -1,3 +1,6 @@
+//! axfrnotify sends a NOTIFY message to a secondary name server to initiate a zone refresh for a specific domain name.
+#![deny(missing_docs)]
+
 extern crate clap;
 extern crate futures;
 extern crate tokio_core;
@@ -18,8 +21,11 @@ use trust_dns::rr::domain;
 use trust_dns::rr::{DNSClass, RecordType, RecordSet};
 use trust_dns::udp::UdpClientStream;
 
+/// Crate version
 static VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
+
+/// Struct representing the configuration set by command line parameters and defaults
 struct Config {
     retries: u16,
     secondary: String,
@@ -30,6 +36,7 @@ struct Config {
 }
 
 
+/// Errors which are reported back to the user
 #[derive(PartialEq)]
 enum ExitCodes {
     Unknown,
@@ -40,6 +47,7 @@ enum ExitCodes {
     TransportError(String),
 }
 
+/// Converts errors to shell exit codes.
 impl From<ExitCodes> for i32 {
     fn from(code: ExitCodes) -> Self {
         match code {
@@ -75,6 +83,7 @@ fn main() {
     exit(result.into());
 }
 
+/// Parses the command line parameters and creates a new `Config`.
 fn parse_parameters() -> Result<Config, ExitCodes> {
     let app = App::new("axfrnotify")
         .version(VERSION)
@@ -139,6 +148,7 @@ fn parse_parameters() -> Result<Config, ExitCodes> {
     Ok(Config { retries: retries, secondary: secondary.to_string(), port: port, record_type: record_type, domain_name: domain_name.to_string(), verbose: verbose })
 }
 
+/// Translates user facing errors into human readable error messages.
 fn print_failure_message(result: &ExitCodes) -> () {
     match *result {
         ExitCodes::Unknown => {
@@ -162,6 +172,7 @@ fn print_failure_message(result: &ExitCodes) -> () {
     }
 }
 
+/// Starts event loop for `Futures` and converts parameters for executing the notification.
 fn notify<A: ToSocketAddrs>(addr: A, record_type: &RecordType, domain_name: &str) -> ExitCodes {
     let io_loop = if let Ok(io_loop) = Core::new() {
         io_loop
@@ -180,6 +191,7 @@ fn notify<A: ToSocketAddrs>(addr: A, record_type: &RecordType, domain_name: &str
     }
 }
 
+/// Actually sends the notification request.
 fn send_notify(mut io_loop: Core, addr: SocketAddr, record_type: &RecordType, name: domain::Name) -> ClientResult<Message> {
     let (stream, sender) = UdpClientStream::new(addr, io_loop.handle());
     let mut client = ClientFuture::new(stream, sender, io_loop.handle(), None);
