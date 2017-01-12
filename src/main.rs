@@ -84,25 +84,25 @@ fn parse_parameters() -> Result<Config, ExitCodes> {
             .short("r")
             .long("retries")
             .value_name("retries")
-            .help("Set the number of retries if notification fails; defaults to 0"))
+            .help("Set the number of retries if notification fails; default is 0"))
         .arg(Arg::with_name("secondary")
             .takes_value(true)
             .short("s")
             .long("secondary")
             .value_name("IP or host name")
-            .help("Set the secondary name server to notify; defaults to 127.0.0.1"))
+            .help("Set the secondary name server to notify; default is 127.0.0.1"))
         .arg(Arg::with_name("port")
             .takes_value(true)
             .short("p")
             .long("port")
             .value_name("port")
-            .help("Set the secondary's port; defaults to 53"))
+            .help("Set the secondary's port; default is 53"))
         .arg(Arg::with_name("record_type")
             .takes_value(true)
             .short("t")
             .long("type")
             .value_name("record_type")
-            .help("Set the record type to send (A, AAAA, CHAME, MX, NS, PTR, SOA, SRV, TXT, ANY, AXFR); defaults to SOA"))
+            .help("Set the record type to send (A, AAAA, CHAME, MX, NS, PTR, SOA, SRV, TXT, ANY, AXFR); default is SOA"))
         .arg(Arg::with_name("domain")
             .takes_value(true)
             .required(true)
@@ -142,7 +142,7 @@ fn parse_parameters() -> Result<Config, ExitCodes> {
 fn print_failure_message(result: &ExitCodes) -> () {
     match *result {
         ExitCodes::Unknown => {
-            println!("You broke axfrnotify.");
+            println!("You broke axfrnotify. Now go and fix it.");
         },
         ExitCodes::InputError(ref msg) => {
             println!("Failed to parse input because {}", msg);
