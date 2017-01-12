@@ -1,6 +1,6 @@
 [package]
 name = "axfrnotify"
-version = "0.0.4"
+version = "0.0.5"
 authors = ["Lukas Pustina <lukas@pustina.net>"]
 description = "Sends a NOTIFY request to a secondary name server to initiate a zone refresh for a specific domain name."
 repository = "https://github.com/lukaspustina/axfr_notify.git"
