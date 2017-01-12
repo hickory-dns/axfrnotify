@@ -2,7 +2,7 @@
 name = "axfrnotify"
 version = "0.0.4"
 authors = ["Lukas Pustina <lukas@pustina.net>"]
-description = "Sends an NOTIFY message to a secondary name server to initiate a zone refresh for a specific domain name."
+description = "Sends a NOTIFY request to a secondary name server to initiate a zone refresh for a specific domain name."
 repository = "https://github.com/lukaspustina/axfr_notify.git"
 documentation = "http://lukaspustina.github.io/axfr_notify"
 readme = "README.md"

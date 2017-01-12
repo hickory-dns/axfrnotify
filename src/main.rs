@@ -1,4 +1,4 @@
-//! axfrnotify sends a NOTIFY message to a secondary name server to initiate a zone refresh for a specific domain name.
+//! axfrnotify sends a NOTIFY request to a secondary name server to initiate a zone refresh for a specific domain name.
 #![deny(missing_docs)]
 
 extern crate clap;
