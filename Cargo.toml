@@ -1,10 +1,9 @@
 [package]
 name = "axfrnotify"
-version = "0.0.5"
+version = "0.1.0"
 authors = ["Lukas Pustina <lukas@pustina.net>"]
 description = "Sends a NOTIFY request to a secondary name server to initiate a zone refresh for a specific domain name."
-repository = "https://github.com/lukaspustina/axfr_notify.git"
-documentation = "http://lukaspustina.github.io/axfr_notify"
+repository = "https://github.com/trust-dns/axfrnotify.git"
 readme = "README.md"
 license = "MIT"
 keywords = ["dns", "axfr", "notify"]
@@ -23,5 +22,5 @@ path = "src/main.rs"
 clap = "2"
 futures = "^0.1"
 tokio-core = "^0.1"
-trust-dns = { git = "https://github.com/bluejekyll/trust-dns.git" }
+trust-dns = "^0.9.3"
 
