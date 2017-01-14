@@ -37,3 +37,7 @@ Sending notify for domain 'example.com' to secondary '8.8.8.8:53'.
 Successfully sent notification and received positive response.
 ```
 
+# Releases
+
+Travis CI creates Ubuntu Trusty packages for each release. Please see the [Repository](https://packagecloud.io/lukaspustina/opensource) for details.
+
