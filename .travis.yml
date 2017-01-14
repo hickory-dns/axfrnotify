@@ -15,16 +15,17 @@ matrix:
   - rust: beta
   - rust: nightly
 before_deploy:
-- cd /home/travis/build/lukaspustina/axfrnotify; cargo build --release
-- cd /home/travis/build/lukaspustina; git clone https://github.com/trust-dns/axfrnotify-deb.git
-- cd /home/travis/build/lukaspustina/axfrnotify-deb; BIN_DIR=../axfrnotify/target/release ARCH=amd64 VERSION=$TRAVIS_TAG TAG=$TRAVIS_TAG DIST=trusty make package
+- cd /home/travis/build/trust-dns/axfrnotify; cargo build --release
+- cd /home/travis/build/trust-dns; git clone https://github.com/trust-dns/axfrnotify-deb.git
+- cd /home/travis/build/trust-dns/axfrnotify-deb; BIN_DIR=../axfrnotify/target/release
+  ARCH=amd64 VERSION=$TRAVIS_TAG TAG=$TRAVIS_TAG DIST=trusty make package
 before_install:
 - gem install package_cloud
 deploy:
   provider: packagecloud
   username: lukaspustina
   token:
-    secure: JzaNHy0lQ4F5Ny1yavNoiptBO5PvymFYLaqDAr1Aym1zi9H5NsjR7jBbXMpXX4SF78699fW7KP27KyFCua1dYcYxalmLJDVQ7cxuL67Ra0bnxNYaFll4Yf0nJEED/+Y2drNbTRYLpp7UH8sVy3hrLQG2JAFbum+88nEso8ucf0H5vsqf2NwV+HKayiBgehh8XDojKyJsrwPOA/Omknykiv4BNEiFHG1s7Nw+a5SWB5GiqP86GdWd0C28LR8RV9OTkuJEKDtXW+ndl25XZ3duYnou1hg5scgQY3Tb9JiCWSR9E42iO49wYdVozvs8mcpDdgDrK45sCfXLuZXdBpC2nogkfFTMo0c0g1AvVsmTp0tsH7/TBywjOG7bjId5LUT/7mMf0xhSXCM94C4R12ztyMTSwM/pbL+RMbfqbffczfFF9Wpv7orTGhy/H/1vk/IGnSjkL9tbtUZN498FvxvWpkT+7vKk9AMXvwwWFGvi7VvitnYRaoGofYEQn5B9n6kAe+7w3YCXi37+tLzgAP4FbfzCAs8wYcNCjDzedx5B9NYZAlfROPo0fqd5y2jnSJHdUt4OHydL0damKOhgYE0Sh+2Yw+skSGsKN3RS19huoPxwkGWGmJ8MvCOFvnuAzY4I115mGLbHtuvnAzGpYiLlufAHApOEQAN0kFN87teEpus=
+    secure: gsNK7iVpj8Sb7/jEBNRxmDBnu1u8LmrieOnh4V7nB45ileE5H2RvRKVKqjzzfSlkzBlIdDUPgovHhheMjM6XvnhTX+e6q+wIpc5UOlhXPd3Q01FfHzylXi/fxkURSf/2TH/4vlZpeZD8wYJ/Lm+2U3WvRHrD7D0BY/1CWOezXcQs5Alw6hVcdu2OR3/SV5e5Z6z94ty+TtbaiVA/Fksq5G+f8xg616VfbnWoG4++62Mt2KJljAXLLrvN6kM5jD0zARyCkhagGWYSkoJr0hQI/uxCY+4VnjZ9DorKnrKlPvLEySCcLfOXbKMqDeVH4YN1//hu7SA5QR7U+sC44u57oiZ9KA+ExOFq9LW3I84C7oj5wUCT8y1CcOFdyS1S0wjsrM07V8iQqW/0gt55Z342uj2OATFLYunXv5KtRqh8ukVNJUXWaBqGZmyGmHfAC2D9eZh/sSS7BshlCOqXLcBYWQjBdB9LFBcFE8pHeNjtI3elcqxhAXPX0uliRyq8hqCEtw5oD+K+lWM6pkdk27KA+POz8vG555NiNcnQJ6yGC+STyalORL2aKpDULhKyy/0O0MDl36vsguWVZpcPOSXnf0wISAOpQ68ydCEwkT8JRXcj0erEWzZpx2kZQ/3mfQe2vVbOimfcLbd+1YaSs45mwjsa6/GLVlmdGwW2javXgK0=
   repository: opensource
   dist: ubuntu/trusty
   package_glob: "**/*.deb"
