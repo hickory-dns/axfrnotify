@@ -16,7 +16,7 @@ matrix:
   - rust: nightly
 before_deploy:
 - cd /home/travis/build/lukaspustina/axfrnotify; cargo build --release
-- cd /home/travis/build/lukaspustina; git clone https://github.com/lukaspustina/axfrnotify-deb.git
+- cd /home/travis/build/lukaspustina; git clone https://github.com/trust-dns/axfrnotify-deb.git
 - cd /home/travis/build/lukaspustina/axfrnotify-deb; BIN_DIR=../axfrnotify/target/release ARCH=amd64 VERSION=$TRAVIS_TAG TAG=$TRAVIS_TAG DIST=trusty make package
 before_install:
 - gem install package_cloud
